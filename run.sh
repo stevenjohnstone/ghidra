@@ -1,8 +1,11 @@
 #!/bin/sh -x
 
-mounts="-v /tmp/.X11-unix:/tmp/.X11-unix"
+export DOCKER_HOST=unix:///run/user/1000/docker.sock
+xmount="/tmp/.X11-unix:/tmp/.X11-unix"
+
+dirmount="$HOME/re:/root/re"
 [ $# -eq 1 ] && {
-    mounts="$mounts -v $(readlink --canonicalize "$1"):/root/target"
+    dirmount="$(readlink --canonicalize "$1"):/root/re"
 }
-docker run --rm -d --cap-drop=all -e DISPLAY="$DISPLAY" $mounts ghidra
+docker run --rm -d --cap-drop=all -e DISPLAY="$DISPLAY" -v "$xmount" -v "$dirmount" ghidra
 
